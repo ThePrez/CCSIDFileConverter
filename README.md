@@ -1,2 +1,18 @@
 # CCSIDCharacterScrubber
-A tool for scrubbing characters that may be unsupported by a given CCSID
+A tool for converting a file from one CCSID to another, but with options that provide
+options for how to handle characters that cannot be converted to the target CCSID
+
+
+```
+Usage: java -jar ccsidconverter.jar  [options] <file>
+
+    Valid options include:
+        --in=<file>:             Input file.
+        --out=<file>:            Output file.
+        --opt=<replace/delete>:  How to handle unconvertible characters (default: delete)
+        --in-ccsid=<ccsid>:      Input file CCSID.
+        --out-ccsid=<ccsid>:     Output file CCSID.
+        --replacement=<char>:    Replacement character to use if replacing.
+        --smart-quotes:          Replace "smart quotes" with standard quotes.
+        --format=<format>:   output format (default is 'ccsid'). See valid formats below.
+```
