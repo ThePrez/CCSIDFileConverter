@@ -6,20 +6,48 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import com.github.theprez.jcmdutils.AppLogger;
 import com.github.theprez.jcmdutils.ProcessLauncher;
 import com.github.theprez.jcmdutils.StringUtils;
 
 public class CcsidCharScrubber {
+
+    enum LineTerminator {
+        CR("\r", new byte[] { 0x0D }), CRLF("\r\n", new byte[] { 0x0D, 0x25 }), LF("\n", new byte[] { 0x25 });
+
+        private final byte[] m_ebcbytes;
+        private final String m_str;
+
+        private LineTerminator(final String _str, final byte[] _ebcbytes) {
+            m_str = _str;
+            m_ebcbytes = _ebcbytes;
+        }
+
+        public byte[] getBytes(final AppLogger _logger, final String _encoding) throws CharacterCodingException, UnsupportedEncodingException {
+            if (isEbcdic(_logger, _encoding)) {
+                return m_ebcbytes;
+            }
+            return m_str.getBytes(_encoding);
+        }
+
+        @Override
+        public String toString() {
+            return m_str;
+        }
+    }
 
     enum ReplacementOpt {
         DELETE(CodingErrorAction.IGNORE), REPLACE(CodingErrorAction.REPLACE);
@@ -32,6 +60,22 @@ public class CcsidCharScrubber {
         public CodingErrorAction getCodingErrorAction() {
             return m_codingErrorAction;
         }
+    }
+
+    private static Map<String, Boolean> s_isEbcdic = new HashMap<String, Boolean>();
+
+    public static boolean isEbcdic(final AppLogger _logger, final String _encoding) throws CharacterCodingException {
+        final Boolean cached = s_isEbcdic.get(_encoding);
+        if (null != cached) {
+            return cached.booleanValue();
+        }
+        final CharsetEncoder encoder = Charset.forName(_encoding).newEncoder();
+        final ByteBuffer outBuf = encoder.encode(CharBuffer.wrap("A"));
+        final boolean isEbcdic = ((byte) 0xC1 == outBuf.array()[0]);
+        s_isEbcdic.put(_encoding, isEbcdic);
+
+        _logger.printfln("Determined that encoding '%s' %s EBCDIC", _encoding, isEbcdic ? "is" : "is not");
+        return isEbcdic;
     }
 
     private static boolean isIBMi() {
@@ -51,6 +95,7 @@ public class CcsidCharScrubber {
         String replacement = "?";
         String outFile = null;
         String inFile = null;
+        LineTerminator lineEnd = LineTerminator.LF;
 
         boolean isReplacingSmartQuotes = false;
 
@@ -72,6 +117,12 @@ public class CcsidCharScrubber {
                     outputEncoding = CcsidUtils.unknownStringToEncoding(remainingArg.replaceFirst(".*=", ""), null);
                 } catch (final Exception e) {
                     logger.println_err("ERROR: invalid output ccsid");
+                }
+            } else if (remainingArg.toLowerCase().startsWith("--line-end=")) {
+                try {
+                    lineEnd = LineTerminator.valueOf(remainingArg.replaceFirst(".*=", "").toUpperCase());
+                } catch (final Exception e) {
+                    logger.println_err("ERROR: invalid line end");
                 }
             } else if (remainingArg.toLowerCase().startsWith("--in=")) {
                 inFile = remainingArg.replaceFirst(".*=", "");
@@ -111,6 +162,8 @@ public class CcsidCharScrubber {
                     final CharBuffer cbuf = CharBuffer.wrap(line);
                     final ByteBuffer encoded = encoder.encode(cbuf);
                     fw.write(encoded);
+                    fw.write(ByteBuffer.wrap(lineEnd.getBytes(logger, outputEncoding)));
+                    encoder.reset();
                 }
             }
             setCcsidTag(logger, new File(outFile), CcsidUtils.encodingToCCSID(outputEncoding));
@@ -134,7 +187,8 @@ public class CcsidCharScrubber {
                                 + "        --out-ccsid=<ccsid>:     Output file CCSID.\n"
                                 + "        --replacement=<char>:    Replacement character to use if replacing.\n"
                                 + "        --smart-quotes:          Replace \"smart quotes\" with standard quotes.\n"
-                                + "\n"
+                                + "        --line-end=<cr/crlf>:    Line endings to use for output file.\n"
+                                  + "\n"
                                 ;
         // @formatter:on
         System.err.println(usage);
