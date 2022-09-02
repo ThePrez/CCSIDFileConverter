@@ -135,7 +135,6 @@ public class CcsidCharScrubber {
                                 + "        --out-ccsid=<ccsid>:     Output file CCSID.\n"
                                 + "        --replacement=<char>:    Replacement character to use if replacing.\n"
                                 + "        --smart-quotes:          Replace \"smart quotes\" with standard quotes.\n"
-                                + "        --format=<format>:   output format (default is 'ccsid'). See valid formats below.\n"
                                 + "\n"
                                 ;
         // @formatter:on

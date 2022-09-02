@@ -1,4 +1,4 @@
-# CCSIDCharacterScrubber
+# CCSID File Converter
 A tool for converting a file from one CCSID to another, but with options that provide
 options for how to handle characters that cannot be converted to the target CCSID
 
@@ -14,5 +14,5 @@ Usage: java -jar ccsidconverter.jar  [options] <file>
         --out-ccsid=<ccsid>:     Output file CCSID.
         --replacement=<char>:    Replacement character to use if replacing.
         --smart-quotes:          Replace "smart quotes" with standard quotes.
-        --format=<format>:   output format (default is 'ccsid'). See valid formats below.
 ```
+
