@@ -167,7 +167,7 @@ public class CcsidCharScrubber {
                 }
             }
             setCcsidTag(logger, new File(outFile), CcsidUtils.encodingToCCSID(outputEncoding));
-            logger.printf_success("Success");
+            logger.println_success("Success");
 
         } catch (final Exception e) {
             logger.printExceptionStack_verbose(e);
