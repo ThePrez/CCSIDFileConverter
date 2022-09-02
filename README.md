@@ -14,5 +14,6 @@ Usage: java -jar ccsidconverter.jar  [options] <file>
         --out-ccsid=<ccsid>:     Output file CCSID.
         --replacement=<char>:    Replacement character to use if replacing.
         --smart-quotes:          Replace "smart quotes" with standard quotes.
+        --line-end=<cr/crlf>:    Line endings to use for output file.
 ```
 
