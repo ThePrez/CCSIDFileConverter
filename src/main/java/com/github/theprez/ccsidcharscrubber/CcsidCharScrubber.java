@@ -145,6 +145,7 @@ public class CcsidCharScrubber {
     private static void setCcsidTag(final AppLogger _logger, final File _file, final int _ccsid) throws IOException, InterruptedException {
         if (!isIBMi() || 0 > _ccsid) {
             _logger.println_verbose("Skipping setting of CCSID tag");
+            return;
         }
         _logger.printfln_verbose("Trying to set CCSID of file '%s' to %d", _file.getName(), _ccsid);
         final Process p = Runtime.getRuntime().exec(new String[] { "/QOpenSys/usr/bin/setccsid", "" + _ccsid, _file.getAbsolutePath() });
