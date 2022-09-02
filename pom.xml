@@ -90,7 +90,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.0.0</version>
         <configuration>
-          <mainClass>com.github.theprez.ccsidcharscruber.CcsidCharScrubber</mainClass>
+          <mainClass>com.github.theprez.ccsidcharscrubber.CcsidCharScrubber</mainClass>
           <includePluginDependencies>false</includePluginDependencies>
         </configuration>
       </plugin>
@@ -110,7 +110,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>com.github.theprez.ccsidcharscruber.CcsidCharScrubber</mainClass>
+              <mainClass>com.github.theprez.ccsidcharscrubber.CcsidCharScrubber</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
