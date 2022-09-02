@@ -105,7 +105,6 @@ public class CcsidCharScrubber {
             try (FileInputStream fis = new FileInputStream(inFile); InputStreamReader isr = new InputStreamReader(fis, inputEncoding); BufferedReader br = new BufferedReader(isr); FileOutputStream fos = new FileOutputStream(outFile); FileChannel fw = fos.getChannel()) {
                 String line = null;
                 while (null != (line = br.readLine())) {
-                    System.out.println("line:" + line);
                     if (isReplacingSmartQuotes) {
                         line = line.replaceAll("[\\u2018\\u2019]", "'").replaceAll("[\\u201C\\u201D]", "\"");
                     }
