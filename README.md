@@ -17,3 +17,5 @@ Usage: java -jar ccsidconverter.jar  [options] <file>
         --line-end=<cr/crlf>:    Line endings to use for output file.
 ```
 
+**Note:** If you're just trying to convert EBCDIC files to view them with an editor or something,
+[this project](https://github.com/ThePrez/CcsidGuesser/) may also interest you. 
